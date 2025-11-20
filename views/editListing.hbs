@@ -1,0 +1,28 @@
+<h1>{{title}}</h1>
+
+<!-- DEBUG: Current listing ID is {{listing.id}} -->
+<form action="/update-listing/{{listing.id}}" method="POST" class="listing-form" id="editForm">
+    <div class="form-group">
+        <label for="NAME">Listing Name:</label>
+        <input type="text" id="NAME" name="NAME" value="{{listing.NAME}}" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="price">Price per Night:</label>
+        <input type="text" id="price" name="price" value="{{listing.price}}" required>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn">Update Listing</button>
+        <a href="/listing/{{listing.id}}" class="btn btn-edit">Cancel</a>
+    </div>
+</form>
+
+<script>
+console.log('Edit form loaded for listing:', '{{listing.id}}');
+console.log('Form action will be:', '/update-listing/{{listing.id}}');
+
+document.getElementById('editForm').addEventListener('submit', function(e) {
+    console.log('Form submitted to:', this.action);
+});
+</script>

@@ -1,0 +1,137 @@
+<h1>{{title}}</h1>
+
+<!-- Enhanced Filters Section with Search Bar -->
+<div class="filters-section">
+    <!-- Quick Search Bar -->
+    <div class="search-bar-container">
+        <form action="/quick-search" method="GET" class="quick-search-form">
+            <div class="search-input-group">
+                <input type="text" name="quickSearch" placeholder="Search by listing name or ID..." class="search-input"
+                    value="{{quickSearch}}">
+                <button type="submit" class="btn btn-search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                    Search
+                </button>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-filter">Apply Filters</button>
+                    <a href="/listings" class="btn btn-edit">Clear Filters</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Advanced Filters -->
+    <form action="/listings/filter" method="GET" class="filters-form">
+        <div class="filter-group">
+            <label for="roomType">Room Type:</label>
+            <select id="roomType" name="roomType">
+                <option value="">All Types</option>
+                <option value="Private room">Private room</option>
+                <option value="Entire home/apt">Entire home/apt</option>
+                <option value="Shared room">Shared room</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="propertyType">Property Type:</label>
+            <select id="propertyType" name="propertyType">
+                <option value="">All Types</option>
+                <option value="apartment">Apartment</option>
+                <option value="loft">Loft</option>
+                <option value="house">House</option>
+                <option value="condo">Condo</option>
+                <option value="townhouse">Townhouse</option>
+                <option value="studio">Studio</option>
+                <option value="bungalow">Bungalow</option>
+                <option value="villa">Villa</option>
+                <option value="guesthouse">Guesthouse</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="neighbourhoodGroup">Neighbourhood Group:</label>
+            <select id="neighbourhoodGroup" name="neighbourhoodGroup">
+                <option value="">All Areas</option>
+                <option value="Manhattan">Manhattan</option>
+                <option value="Brooklyn">Brooklyn</option>
+                <option value="Queens">Queens</option>
+                <option value="Bronx">Bronx</option>
+                <option value="Staten Island">Staten Island</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="minPrice">Min Price:</label>
+            <input type="number" id="minPrice" name="minPrice" placeholder="0" min="0">
+        </div>
+
+        <div class="filter-group">
+            <label for="maxPrice">Max Price:</label>
+            <input type="number" id="maxPrice" name="maxPrice" placeholder="1000" min="0">
+        </div>
+
+        <div class="filter-group">
+            <label for="minRating">Min Rating:</label>
+            <select id="minRating" name="minRating">
+                <option value="0">Any Rating</option>
+                <option value="4">4+ Stars</option>
+                <option value="4.5">4.5+ Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
+        </div>
+
+    </form>
+</div>
+
+<div class="listings-grid">
+    {{#each listings}}
+    <div class="listing-card" onclick="window.location.href='/listing/{{this.id}}'" style="cursor: pointer;">
+        <img src="{{this.thumbnail}}" alt="{{defaultNA this.NAME}}">
+        <div class="listing-info">
+            <h3>{{defaultNA this.NAME}}</h3>
+
+            <div class="price-section">
+                <div class="price-tag">${{formatPrice this.price}}</div>
+                <div class="listing-meta">
+                    <div class="neighbourhood">{{this.neighbourhood}}</div>
+                    <div class="room-type">{{this.room_type}}</div>
+                </div>
+            </div>
+
+            <div class="card-details">
+                <div class="detail-item">
+                    <span class="detail-label">Rating</span>
+                    <span class="detail-value">{{this.review_rate_number}}/5</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Reviews</span>
+                    <span class="detail-value">{{this.number_of_reviews}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Min Nights</span>
+                    <span class="detail-value">{{this.minimum_nights}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Available</span>
+                    <span class="detail-value">{{this.availability_365}} days</span>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a href="/edit-listing/{{this.id}}" class="btn btn-edit">Edit</a>
+                <form action="/delete-listing/{{this.id}}" method="POST" class="delete-form">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="error-message">
+        <p>No listings found.</p>
+        <a href="/add-listing" class="btn">Add First Listing</a>
+    </div>
+    {{/each}}
+</div>

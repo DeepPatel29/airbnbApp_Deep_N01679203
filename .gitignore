@@ -1,0 +1,8 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Optional: Exclude large JSON data file if needed
+airbnb_with_photos.json

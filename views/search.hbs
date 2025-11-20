@@ -1,0 +1,62 @@
+<h1>{{title}}</h1>
+<form action="/search" method="POST" class="search-form">
+    <div class="form-group">
+        <label for="searchType">Search By:</label>
+        <select id="searchType" name="searchType" required>
+            <option value="">Select Search Type</option>
+            <option value="id">Listing ID</option>
+            <option value="name">Name</option>
+            <option value="neighbourhood">Neighbourhood</option>
+            <option value="host_name">Host Name</option>
+            <option value="room_type">Room Type</option>
+            <option value="price_range">Price Range</option>
+        </select>
+    </div>
+    
+    <div class="form-group" id="searchValueGroup">
+        <label for="searchValue">Search Value:</label>
+        <input type="text" id="searchValue" name="searchValue" placeholder="Enter search term">
+    </div>
+    
+    <div class="form-group" id="priceRangeGroup" style="display: none;">
+        <div class="price-inputs">
+            <div>
+                <label for="minPrice">Min Price:</label>
+                <input type="number" id="minPrice" name="minPrice" placeholder="0" min="0">
+            </div>
+            <div>
+                <label for="maxPrice">Max Price:</label>
+                <input type="number" id="maxPrice" name="maxPrice" placeholder="1000" min="0">
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn">Search</button>
+        <a href="/listings" class="btn btn-edit">View All Listings</a>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchType = document.getElementById('searchType');
+    const searchValueGroup = document.getElementById('searchValueGroup');
+    const priceRangeGroup = document.getElementById('priceRangeGroup');
+    const searchValue = document.getElementById('searchValue');
+
+    function updateFormFields() {
+        if (searchType.value === 'price_range') {
+            searchValueGroup.style.display = 'none';
+            priceRangeGroup.style.display = 'block';
+            searchValue.removeAttribute('required');
+        } else {
+            searchValueGroup.style.display = 'block';
+            priceRangeGroup.style.display = 'none';
+            searchValue.setAttribute('required', 'required');
+        }
+    }
+
+    searchType.addEventListener('change', updateFormFields);
+    updateFormFields();
+});
+</script>

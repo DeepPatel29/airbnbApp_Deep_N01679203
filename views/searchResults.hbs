@@ -1,0 +1,67 @@
+<h1>{{title}}</h1>
+
+<div class="search-info">
+    <div class="search-summary">
+        <h3>Search Results</h3>
+        <p>Found <strong>{{resultsCount}}</strong> listings for: <strong>{{searchDescription}}</strong></p>
+    </div>
+    <div class="search-actions">
+        <a href="/search" class="btn btn-edit">New Search</a>
+        <a href="/listings" class="btn">View All Listings</a>
+    </div>
+</div>
+
+{{#if listings.length}}
+<div class="listings-grid">
+    {{#each listings}}
+    <div class="listing-card" onclick="window.location.href='/listing/{{this.id}}'" style="cursor: pointer;">
+        <img src="{{this.thumbnail}}" alt="{{defaultNA this.NAME}}">
+        <div class="listing-info">
+            <h3>{{defaultNA this.NAME}}</h3>
+            
+            <div class="price-section">
+                <div class="price-tag">${{formatPrice this.price}}</div>
+                <div class="listing-meta">
+                    <div class="neighbourhood">{{this.neighbourhood}}</div>
+                    <div class="room-type">{{this.room_type}}</div>
+                </div>
+            </div>
+            
+            <div class="card-details">
+                <div class="detail-item">
+                    <span class="detail-label">Rating</span>
+                    <span class="detail-value">{{this.review_rate_number}}/5</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Reviews</span>
+                    <span class="detail-value">{{this.number_of_reviews}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Min Nights</span>
+                    <span class="detail-value">{{this.minimum_nights}}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Available</span>
+                    <span class="detail-value">{{this.availability_365}} days</span>
+                </div>
+            </div>
+            
+            <div class="card-actions" onclick="event.stopPropagation();">
+                <a href="/edit-listing/{{this.id}}" class="btn btn-edit">Edit</a>
+                <form action="/delete-listing/{{this.id}}" method="POST" class="delete-form">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+{{else}}
+<div class="error-message">
+    <p>No listings found for your search criteria.</p>
+    <div class="action-buttons">
+        <a href="/search" class="btn">Try Another Search</a>
+        <a href="/listings" class="btn btn-edit">View All Listings</a>
+    </div>
+</div>
+{{/if}}

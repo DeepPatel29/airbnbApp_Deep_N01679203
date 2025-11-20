@@ -1,0 +1,118 @@
+<h1>{{title}}</h1>
+{{#if message}}
+<div class="alert alert-success">{{message}}</div>
+{{/if}}
+<div class="listing-detail">
+    <div class="listing-images">
+        <img src="{{listing.thumbnail}}" alt="{{listing.NAME}}">
+        {{#if listing.images.length}}
+        <div class="image-gallery">
+            {{#each listing.images}}
+            <img src="{{this}}" alt="Image {{@index}}">
+            {{/each}}
+        </div>
+        {{/if}}
+    </div>
+    <div class="listing-info">
+        <h2>{{defaultNA listing.NAME}}</h2>
+        
+        <div class="price-section">
+            <div class="price-tag">${{formatPrice listing.price}}</div>
+            <div class="listing-meta">
+                <div class="neighbourhood">{{listing.neighbourhood}}</div>
+                <div class="room-type">{{listing.room_type}}</div>
+            </div>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Host</strong>
+            <span>{{defaultNA listing.host_name}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Host ID</strong>
+            <span>{{defaultNA listing.host_id}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Price</strong>
+            <span>${{formatPrice listing.price}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Service Fee</strong>
+            <span>${{formatPrice listing.service_fee}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Room Type</strong>
+            <span>{{defaultNA listing.room_type}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Property Type</strong>
+            <span>{{defaultNA listing.property_type}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Neighbourhood</strong>
+            <span>{{defaultNA listing.neighbourhood}}, {{defaultNA listing.neighbourhood_group}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Minimum Nights</strong>
+            <span>{{defaultNA listing.minimum_nights}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Rating</strong>
+            <span>{{defaultNA listing.review_rate_number}}/5</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Number of Reviews</strong>
+            <span>{{defaultNA listing.number_of_reviews}}</span>
+        </div>
+        
+        <div class="detail-item-simple">
+            <strong>Availability</strong>
+            <span>{{defaultNA listing.availability_365}} days/year</span>
+        </div>
+        
+        {{#if listing.instant_bookable}}
+        <div class="detail-item-simple">
+            <strong>Instant Bookable</strong>
+            <span>{{listing.instant_bookable}}</span>
+        </div>
+        {{/if}}
+        
+        {{#if listing.cancellation_policy}}
+        <div class="detail-item-simple">
+            <strong>Cancellation Policy</strong>
+            <span>{{listing.cancellation_policy}}</span>
+        </div>
+        {{/if}}
+        
+        {{#if listing.house_rules}}
+        <div class="detail-item-simple">
+            <strong>House Rules</strong>
+            <span>{{listing.house_rules}}</span>
+        </div>
+        {{/if}}
+        
+        {{#if listing.license}}
+        <div class="detail-item-simple">
+            <strong>License</strong>
+            <span>{{listing.license}}</span>
+        </div>
+        {{/if}}
+        
+        <div class="actions">
+            <a href="/edit-listing/{{listing.id}}" class="btn btn-edit">Edit</a>
+            <form action="/delete-listing/{{listing.id}}" method="POST" class="delete-form">
+                <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+            <a href="/listings" class="btn">Back to Listings</a>
+        </div>
+    </div>
+</div>
