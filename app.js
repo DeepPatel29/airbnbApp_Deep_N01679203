@@ -128,17 +128,134 @@ app.get('/listing/:id', async (req, res) => {
     }
 });
 
-// Search for listings
-app.get('/search', (req, res) => {
-    res.render('search', {
-        title: 'Search Listing'
-    });
-});
+// // Search for listings
+// app.get('/search', (req, res) => {
+//     res.render('search', {
+//         title: 'Search Listing'
+//     });
+// });
 
-// Handle search form submission
-app.post('/search', async (req, res) => {
+// // Handle search form submission
+// app.post('/search', async (req, res) => {
+//     try {
+//         const { searchType, searchValue, minPrice, maxPrice } = req.body;
+
+//         if (!searchType) {
+//             return res.render('error', {
+//                 title: 'Error',
+//                 message: 'Please select a search type'
+//             });
+//         }
+
+//         let listings = [];
+//         let searchDescription = '';
+
+//         if (searchType === 'price_range') {
+//             if (!minPrice && !maxPrice) {
+//                 return res.render('error', {
+//                     title: 'Error',
+//                     message: 'Please provide at least one price value (min or max)'
+//                 });
+//             }
+
+//             const allListings = await Listing.find({}).limit(200);
+//             listings = allListings.filter(listing => {
+//                 let listingPrice = 0;
+//                 if (listing.price) {
+//                     const priceStr = listing.price.toString().replace('$', '').replace(',', '').trim();
+//                     listingPrice = parseFloat(priceStr) || 0;
+//                 }
+
+//                 if (minPrice && listingPrice < parseFloat(minPrice)) return false;
+//                 if (maxPrice && listingPrice > parseFloat(maxPrice)) return false;
+//                 return true;
+//             });
+
+//             searchDescription = `Price Range: $${minPrice || '0'} - $${maxPrice || 'Any'}`;
+
+//         } else {
+//             if (!searchValue || searchValue.trim() === '') {
+//                 return res.render('error', {
+//                     title: 'Error',
+//                     message: 'Please enter a search value'
+//                 });
+//             }
+
+//             let query = {};
+//             const searchTerm = searchValue.trim();
+
+//             switch (searchType) {
+//                 case 'id':
+//                     query.id = searchTerm;
+//                     searchDescription = `ID: ${searchTerm}`;
+//                     break;
+//                 case 'name':
+//                     query.NAME = { $regex: searchTerm, $options: 'i' };
+//                     searchDescription = `Name: ${searchTerm}`;
+//                     break;
+//                 case 'neighbourhood':
+//                     query.neighbourhood = { $regex: searchTerm, $options: 'i' };
+//                     searchDescription = `Neighbourhood: ${searchTerm}`;
+//                     break;
+//                 case 'host_name':
+//                     query.host_name = { $regex: searchTerm, $options: 'i' };
+//                     searchDescription = `Host Name: ${searchTerm}`;
+//                     break;
+//                 case 'room_type':
+//                     query.room_type = { $regex: searchTerm, $options: 'i' };
+//                     searchDescription = `Room Type: ${searchTerm}`;
+//                     break;
+//                 default:
+//                     return res.render('error', {
+//                         title: 'Error',
+//                         message: 'Invalid search type'
+//                     });
+//             }
+
+//             listings = await Listing.find(query).limit(50);
+//         }
+
+//         if (!listings || listings.length === 0) {
+//             return res.render('error', {
+//                 title: 'No Results Found',
+//                 message: `No listings found for ${searchDescription}`
+//             });
+//         }
+
+//         const transformedListings = listings.map(listing => ({
+//             ...listing._doc,
+//             "host name": listing.host_name,
+//             "neighbourhood group": listing.neighbourhood_group,
+//             "room type": listing.room_type,
+//             "service fee": listing.service_fee,
+//             "minimum nights": listing.minimum_nights,
+//             "number of reviews": listing.number_of_reviews,
+//             "review rate number": listing.review_rate_number,
+//             "availability 365": listing.availability_365
+//         }));
+
+//         res.render('searchResults', {
+//             title: 'Search Results',
+//             listings: transformedListings,
+//             searchDescription: searchDescription,
+//             resultsCount: listings.length
+//         });
+
+//     } catch (error) {
+//         console.error('Search error:', error);
+//         res.render('error', {
+//             title: 'Search Error',
+//             message: 'Failed to perform search: ' + error.message
+//         });
+//     }
+// });
+
+// Search listing by ID
+// Enhanced search listing by multiple criteria
+app.post('/search/listing', async (req, res) => {
     try {
         const { searchType, searchValue, minPrice, maxPrice } = req.body;
+        console.log('Search request:', { searchType, searchValue, minPrice, maxPrice });
 
         if (!searchType) {
             return res.render('error', {
@@ -150,7 +267,9 @@ app.post('/search', async (req, res) => {
         let listings = [];
         let searchDescription = '';
 
+        // Handle different search types
         if (searchType === 'price_range') {
+            // Price range search
             if (!minPrice && !maxPrice) {
                 return res.render('error', {
                     title: 'Error',
@@ -162,6 +281,7 @@ app.post('/search', async (req, res) => {
             listings = allListings.filter(listing => {
                 let listingPrice = 0;
                 if (listing.price) {
+                    // Clean the price string and convert to number
                     const priceStr = listing.price.toString().replace('$', '').replace(',', '').trim();
                     listingPrice = parseFloat(priceStr) || 0;
                 }
@@ -174,6 +294,7 @@ app.post('/search', async (req, res) => {
             searchDescription = `Price Range: $${minPrice || '0'} - $${maxPrice || 'Any'}`;
 
         } else {
+            // Text-based searches
             if (!searchValue || searchValue.trim() === '') {
                 return res.render('error', {
                     title: 'Error',
@@ -213,6 +334,7 @@ app.post('/search', async (req, res) => {
             }
 
             listings = await Listing.find(query).limit(50);
+            console.log(`Found ${listings.length} listings for query:`, query);
         }
 
         if (!listings || listings.length === 0) {
@@ -222,6 +344,7 @@ app.post('/search', async (req, res) => {
             });
         }
 
+        // Transform the data
         const transformedListings = listings.map(listing => ({
             ...listing._doc,
             "host name": listing.host_name,
@@ -246,6 +369,209 @@ app.post('/search', async (req, res) => {
         res.render('error', {
             title: 'Search Error',
             message: 'Failed to perform search: ' + error.message
+        });
+    }
+});
+
+// Search listing form - GET
+app.get('/search', (req, res) => {
+    res.render('search', {
+        title: 'Search Listing'
+    });
+});
+
+// Handle search form submission - POST
+app.post('/search', async (req, res) => {
+    try {
+        const { searchType, searchValue, minPrice, maxPrice } = req.body;
+        console.log('Search request received:', { searchType, searchValue, minPrice, maxPrice });
+
+        if (!searchType) {
+            return res.render('error', {
+                title: 'Error',
+                message: 'Please select a search type'
+            });
+        }
+
+        let listings = [];
+        let searchDescription = '';
+
+        // Handle different search types
+        if (searchType === 'price_range') {
+            // Price range search
+            if (!minPrice && !maxPrice) {
+                return res.render('error', {
+                    title: 'Error',
+                    message: 'Please provide at least one price value (min or max)'
+                });
+            }
+
+            const allListings = await Listing.find({}).limit(200);
+            listings = allListings.filter(listing => {
+                let listingPrice = 0;
+                if (listing.price) {
+                    const priceStr = listing.price.toString().replace('$', '').replace(',', '').trim();
+                    listingPrice = parseFloat(priceStr) || 0;
+                }
+
+                if (minPrice && listingPrice < parseFloat(minPrice)) return false;
+                if (maxPrice && listingPrice > parseFloat(maxPrice)) return false;
+                return true;
+            });
+
+            searchDescription = `Price Range: $${minPrice || '0'} - $${maxPrice || 'Any'}`;
+
+        } else {
+            // Text-based searches
+            if (!searchValue || searchValue.trim() === '') {
+                return res.render('error', {
+                    title: 'Error',
+                    message: 'Please enter a search value'
+                });
+            }
+
+            let query = {};
+            const searchTerm = searchValue.trim();
+
+            switch (searchType) {
+                case 'id':
+                    query.id = searchTerm;
+                    searchDescription = `ID: ${searchTerm}`;
+                    break;
+                case 'name':
+                    query.NAME = { $regex: searchTerm, $options: 'i' };
+                    searchDescription = `Name: ${searchTerm}`;
+                    break;
+                case 'neighbourhood':
+                    query.neighbourhood = { $regex: searchTerm, $options: 'i' };
+                    searchDescription = `Neighbourhood: ${searchTerm}`;
+                    break;
+                case 'host_name':
+                    query.host_name = { $regex: searchTerm, $options: 'i' };
+                    searchDescription = `Host Name: ${searchTerm}`;
+                    break;
+                case 'room_type':
+                    query.room_type = { $regex: searchTerm, $options: 'i' };
+                    searchDescription = `Room Type: ${searchTerm}`;
+                    break;
+                default:
+                    return res.render('error', {
+                        title: 'Error',
+                        message: 'Invalid search type'
+                    });
+            }
+
+            listings = await Listing.find(query).limit(50);
+            console.log(`Found ${listings.length} listings for query:`, query);
+        }
+
+        if (!listings || listings.length === 0) {
+            return res.render('error', {
+                title: 'No Results Found',
+                message: `No listings found for ${searchDescription}`
+            });
+        }
+
+        // Transform the data
+        const transformedListings = listings.map(listing => ({
+            ...listing._doc,
+            "host name": listing.host_name,
+            "neighbourhood group": listing.neighbourhood_group,
+            "room type": listing.room_type,
+            "service fee": listing.service_fee,
+            "minimum nights": listing.minimum_nights,
+            "number of reviews": listing.number_of_reviews,
+            "review rate number": listing.review_rate_number,
+            "availability 365": listing.availability_365
+        }));
+
+        res.render('searchResults', {
+            title: 'Search Results',
+            listings: transformedListings,
+            searchDescription: searchDescription,
+            resultsCount: listings.length
+        });
+
+    } catch (error) {
+        console.error('Search error:', error);
+        res.render('error', {
+            title: 'Search Error',
+            message: 'Failed to perform search: ' + error.message
+        });
+    }
+});
+
+// Filter listings with multiple criteria
+app.get('/listings/filter', async (req, res) => {
+    try {
+        const { roomType, neighbourhoodGroup, minPrice, maxPrice, minRating, propertyType } = req.query;
+
+        let query = {};
+
+        if (roomType) query.room_type = roomType;
+        if (neighbourhoodGroup) query.neighbourhood_group = neighbourhoodGroup;
+        if (propertyType) query.property_type = propertyType;
+
+        // Fix price filtering - handle string prices
+        if (minPrice || maxPrice) {
+            query.$expr = {};
+            let priceConditions = [];
+
+            if (minPrice) {
+                priceConditions.push({
+                    $gte: [
+                        { $toDouble: { $ifNull: ["$price", 0] } },
+                        parseFloat(minPrice)
+                    ]
+                });
+            }
+
+            if (maxPrice) {
+                priceConditions.push({
+                    $lte: [
+                        { $toDouble: { $ifNull: ["$price", 0] } },
+                        parseFloat(maxPrice)
+                    ]
+                });
+            }
+
+            if (priceConditions.length > 0) {
+                query.$expr = { $and: priceConditions };
+            }
+        }
+
+        if (minRating) {
+            query.review_rate_number = {
+                $gte: parseFloat(minRating)
+            };
+        }
+
+        const listings = await Listing.find(query).limit(100);
+        console.log(`Found ${listings.length} listings with filter query:`, query);
+
+        // Transform the data
+        const transformedListings = listings.map(listing => ({
+            ...listing._doc,
+            "host name": listing.host_name,
+            "neighbourhood group": listing.neighbourhood_group,
+            "room type": listing.room_type,
+            "service fee": listing.service_fee,
+            "minimum nights": listing.minimum_nights,
+            "number of reviews": listing.number_of_reviews,
+            "review rate number": listing.review_rate_number,
+            "availability 365": listing.availability_365
+        }));
+
+        res.render('allListings', {
+            title: 'Filtered Listings',
+            listings: transformedListings
+        });
+
+    } catch (error) {
+        console.error('Filter error:', error);
+        res.render('error', {
+            title: 'Error',
+            message: 'Filter failed: ' + error.message
         });
     }
 });
